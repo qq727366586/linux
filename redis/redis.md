@@ -1,5 +1,7 @@
 # redis.conf
 
+my.cnf
+
 bind 0.0.0.0
 protected-mode no
 port 6379

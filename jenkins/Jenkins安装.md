@@ -2,10 +2,28 @@
 yum install java-1.8.0-openjdk* -y
 
 2.下载jenkins安装包 
-jenkins-2.284-1.1.noarch.rpm
+1 配置本地Yum安装源
+ wget -O /etc/yum.repos.d/jenkins.repo http://pkg.jenkins-ci.org/redhat-stable/jenkins.repo 
 
-3.安装
-rpm -ivh jenkins-2.284-1.1.noarch.rpm
+# yum 安装daemonize 错误：依赖检测失败： daemonize 被 jenkins-2.303.1-1.1.noarch 需要
+
+**安装 epel-release**
+
+```c
+yum  -y install epel-release
+```
+
+**安装 daemonize**
+
+```c
+yum -y install daemonize
+```
+
+2 导入秘钥
+ sudo rpm --import https://jenkins-ci.org/redhat/jenkins-ci.org.key 
+
+3 安装
+yum install jenkins
 
 4.修改jenkin配置
 
@@ -18,9 +36,7 @@ JENKINS_PORT="8088"
 
 cd /var/lib/jenkins/updates
 
-sed -i 's/http:\/\/updates.jenkins-
-ci.org\/download/https:\/\/mirrors.tuna.tsinghua.edu.cn\/jenkins/g' default.json && sed -i
-'s/http:\/\/www.google.com/https:\/\/www.baidu.com/g' default.json
+ sed -i 's/http:\/\/updates.jenkins-ci.org\/download/https:\/\/mirrors.tuna.tsinghua.edu.cn\/jenkins/g' default.json && sed -i 's/http:\/\/www.google.com/https:\/\/www.baidu.com/g' default.json 
 
 5.启动jenkins
 systemctl start jenkins

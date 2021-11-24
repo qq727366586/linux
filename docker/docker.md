@@ -39,11 +39,6 @@ vi /etc/docker/daemon.json
 service docker restart
 ```
 
-```bash
-usermod -aG docker $USER
-newgrp docker
-```
-
 ## 可以愉快到玩耍了！
 
 注：命令在root下执行 or 加sudo

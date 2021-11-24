@@ -17,12 +17,12 @@ services:
     environment:
       - SPAN_STORAGE_TYPE=elasticsearch
       - COLLECTOR_ZIPKIN_HOST_PORT=9411
-      - ES_SERVER_URLS=http://120.55.52.223:9200
+      - ES_SERVER_URLS=http://47.106.198.131:9200
       - ES_USERNAME=elastic
-      - ES_PASSWORD=ruiyun2020.
+      - ES_PASSWORD=nkDzA62W8ZZA3N7ojBpc
       - LOG_LEVEL=debug
     #depends_on:
-     # - elasticsearch
+      #- elasticsearch
   agent:
     image: jaegertracing/jaeger-agent
     container_name: jaeger_agent
@@ -31,8 +31,8 @@ services:
     networks:
       - net_jaeger_agent
     environment:
-      - COLLECTOR_HOST_PORT=120.55.52.223:14267
-      - REPORTER_GRPC_HOST_PORT=120.55.52.223:14250
+      - COLLECTOR_HOST_PORT=47.106.198.131:14267
+      - REPORTER_GRPC_HOST_PORT=47.106.198.131:14250
       - LOG_LEVEL=debug
     ports:
       - 5775:5775/udp
@@ -50,17 +50,17 @@ services:
       - net_jaeger_query
     environment:
       - SPAN_STORAGE_TYPE=elasticsearch
-      - ES_SERVER_URLS=http://120.55.52.223:9200
+      - ES_SERVER_URLS=http://47.106.198.131:9200
       - ES_USERNAME=elastic
-      - ES_PASSWORD=ruiyun2020.
+      - ES_PASSWORD=nkDzA62W8ZZA3N7ojBpc
       - LOG_LEVEL=debug
     ports:
       - 16686:16686
     #depends_on:
-     # - elasticsearch
+      #- elasticsearch
   hotrod:
     image: jaegertracing/example-hotrod:1.6
-    command: all --jaeger-agent.host-port=120.55.52.223:6831
+    command: all --jaeger-agent.host-port=47.106.198.131:6831
     ports:
       - 8080:8080
     depends_on:
@@ -72,3 +72,4 @@ networks:
     driver: bridge
   net_jaeger_query:
     driver: bridge
+
