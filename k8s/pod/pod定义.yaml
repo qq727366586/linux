@@ -155,6 +155,6 @@ spec:
   hostNetwork:
   #存储卷,用于定义在pod上面挂载的存储信息<[]object>
   volumes:
-#重启策略,表示pod在遇到故障的时候处理策略<string>
+#重启策略,表示pod在遇到故障的时候处理策略<string> Always OnFailure Never
 restartPolicy: Always
 
