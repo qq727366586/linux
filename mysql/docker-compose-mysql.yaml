@@ -1,0 +1,21 @@
+version: "3"
+services:
+  mysql:
+    restart: always
+    image: mysql:5.7.18
+    container_name: mysql-5.7.18
+    volumes:
+      - /usr/local/src/mysql/mydir:/mydir
+      - /usr/local/src/mysql/datadir:/var/lib/mysql
+      - /usr/local/src/mysql/conf/my.cnf:/etc/my.cnf
+      - /apps/mysql/source:/docker-entrypoint-initdb.d  # mysql存数初始化数据的地方
+    environment:
+      - "MYSQL_ROOT_PASSWORD=root"
+      - "TZ=Asia/Shanghai"
+    ports:
+      # 使用宿主机的3306端口映射到容器的3306端口
+      # 宿主机：容器
+      - 11111:3306
+networks:
+  net_mysql:
+    driver: bridge
