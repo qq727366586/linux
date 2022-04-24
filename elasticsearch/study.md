@@ -31,4 +31,5 @@ GET /megacorp/_doc/1
 #获取某个索引下的所有
 GET /megacorp/_search
 
+#
 
