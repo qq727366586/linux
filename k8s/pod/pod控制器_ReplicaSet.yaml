@@ -1,17 +1,24 @@
-# 保证一定数量的pod能够正常运行,一旦pod发生故障就会重启或者重建
-# 支持对pod的数量进行扩缩容 和 版本镜像的升级
+# 主要用于负责批量处理指定数量的 一次性任务
 
-apiVersion: apps/v1
-kind: ReplicaSet
+apiVersion: batch/v1
+kind: Job
 metadata:
-  name: rs
+  name: job
   namespace: dev
   labels:
-    controller: ReplicaSet
+    controller: job
 
 spec:
-  # 副本数量
-  replicas: 3  
+  # 指定job需要成功运行pod的次数 默认 1
+  completions: 1
+  # 指定job在任意时刻应该运行pod的数量
+  parallelism: 1  
+  # 指定job可运行的时间限制 超过时间还未结束 系统将尝试进行终止
+  activeDeadlineSeconds: 30
+  # 指定job失败后可重试的次数 默认6
+  backoffLimit: 6
+  # 是否可以指定selector选择器 选择pod 默认false
+  manualSelector: true
   selector:
     matchLabels:
       app: nginx-pod
