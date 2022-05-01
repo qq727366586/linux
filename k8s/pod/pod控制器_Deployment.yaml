@@ -1,0 +1,58 @@
+# 支持ReplicaSet所有功能, 支持发布的停止 和 继续 
+# 支持版本的滚动升级 和 版本回退
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dm
+  namespace: dev
+  labels:
+    controller: dm
+
+spec:
+  # 副本数量
+  replicas: 3
+  # 保留历史版本 默认是10
+  reversionHistoryLimit: 3
+  # 暂停部署 默认fasle
+  paused: false 
+  # 部署的超时时间(s), 默认是 600
+  progressDeadlineSeconds: 600
+  # 策略
+  strategy:
+    # 滚动更新策略
+    type: RollingUpdate
+    rollingUpdate:
+      # 最大额外可以存在的副本数,可以为百分比,也可以为整数 
+      maxSurge: 30%
+      # 最大不可用状态的 pod 最大值,可以为百分比,也可以为整数
+      maxUnavailabel: 30%
+  selector:
+    matchLabels:
+      app: nginx-pod
+    matchExpressions:
+      - {key: app, operator: In, values: [nginx-pod]}
+  # 当副本数量不足的时候, 会根据模板文件创建pod副本
+  template:
+    metadata:
+      labels:
+        app: nginx-pod
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.17.1
+        ports:
+        - containerPort: 80
+
+# 调试滚动更新 kubectl set image deployment dm nginx=nginx:1.17.3 -n dev
+
+# 记录整个deployment的更新过程 kubectl create -f *.yaml --record   
+
+# 版本回退    kubectl rollout undo deploy/dm --to-revision=4 -n dev
+# kubectl rollout
+# status  显示当前升级状态
+# history 显示升级的历史记录
+# pause   暂停版本的升级过程 
+# resume  继续已经暂停的版本升级过程
+# restart 重启版本升级过程
+# undo    回滚到上一版本 可以用 --to-revision回滚到指定的版本
