@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: mem-cup-quota
+  namespace: test
+spec:
+  hard:
+    requests.cpu: 2 # 这个命名空间下的应用 cpu 请求总数不能超过 2核
+    requests.memory: 2Gi # 这个命名空间下的应用 内存 使用不能超过 2G
+    limits.cpu: 4 # 最多使用 4核
+    limits.memory: 4Gi # 最大内存 4G

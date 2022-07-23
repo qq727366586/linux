@@ -3,7 +3,7 @@ kind: Pod
 # 元数据
 metadata:
   name: nginx-v1
-  namespace: default
+  namespace: test
   labels:
     region: sz
     version: v1
