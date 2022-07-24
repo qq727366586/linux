@@ -8,6 +8,12 @@ metadata:
     region: sz
     version: v1
 spec:
+  restartPolicy: Always # pod 重启策略 Always onFailure Never
+  initContainers: # 初始化容器
+  - name: init-container
+    command:
+      - "echo"
+      - "init-container"
   containers:
   - name: nginx-v1 # 容器的名字 required
     image: nginx
@@ -15,6 +21,57 @@ spec:
     ports:
     - name: nginx-port
       containerPort: 80 # 容器端口
+  nodeName: node1 # 节点选择器 - 指定分配到哪个节点上
+  nodeSelector: # 节点选择器 - 根据节点的标签选择分配
+    disk: ceph
+  tolerations:
+    effect: NoExecute
+    key: taint-no-execute
+    operator: Exists  #
+    value: dev
+    tolerationSeconds: 3600  # 只有在NoExecute有效 其与默认0 就是立即驱逐
+  affinity: # 亲和性
+    nodeAffinity: # 节点亲和性
+      requiredDuringSchedulingIgnoredDuringExecution: # 硬亲和性
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: zone
+                operator: In
+                values:
+                  - foo
+                  - bar
+      preferredDuringSchedulingIgnoredDuringExecution: # 软亲和性
+        - preference:
+            matchExpressions:
+              - key: zone
+                operator: In
+                values:
+                  - foo
+                  - bar
+          weight:
+    podAffinity: # pod亲和性
+      requiredDuringSchedulingIgnoredDuringExecution: # pod 硬亲和性
+        - labelSelector:
+            matchExpressions:
+              - key: zone
+                operator: In
+                values:
+                  - foo
+                  - bar
+          namespaces:  # 去哪个名称空间寻找 labelSelector: namespaces specifies which namespaces the labelSelector applies to (matches against); null or empty list means "this pod's namespace"
+          topologyKey: kubernetes.io/hostname
+    podAntiAffinity: # pod反亲和性
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchExpressions:
+              - key: zone
+                operator: In
+                values:
+                  - foo
+                  - bar
+            namespaces:  # 去哪个名称空间寻找 labelSelector: namespaces specifies which namespaces the labelSelector applies to (matches against); null or empty list means "this pod's namespace"
+            topologyKey: kubernetes.io/hostname
+
 
 
 
