@@ -21,45 +21,97 @@ spec:
     ports:
     - name: nginx-port
       containerPort: 80 # 容器端口
+    lifecycle: # 生命周期
+      postStart: # 启动后 exec httpGet tcpSocket
+        httpGet:
+          scheme: https
+            host: http.ljy.com
+            port: 80
+            httpHeaders:
+              - Authorization: token
+            path: /test/ping
+      preStop: # 停止前 exec httpGet tcpSocket
+        httpGet:
+          scheme: https
+            host: http.ljy.com
+            port: 80
+            httpHeaders:
+              - Authorization: token
+            path: /test/ping
+    startupProbe: # 启动后探测
+      initialDelaySeconds: 5 # 启动后延迟多少秒开始检测
+      periodSeconds: 30 # 检测间隔时间
+      successThreshold: 1 # 检测成功数达到多少才算成功 默认1
+      timeoutSeconds: 3 # 多少秒没有反应代表失败
+      failureThreshold: 1 # 允许失败的次数
+      httpGet:
+        scheme: https
+        host: http.ljy.com
+        port: 80
+        httpHeaders:
+          - Authorization: token
+        path: /test/ping
+    readinessProbe: # 就绪型探测
+      initialDelaySeconds: 5 # 启动后延迟多少秒开始检测
+      periodSeconds: 30 # 检测间隔时间
+      successThreshold: 1 # 检测成功数达到多少才算成功 默认1
+      timeoutSeconds: 3 # 多少秒没有反应代表失败
+      failureThreshold: 1 # 允许失败的次数
+      httpGet:
+        scheme: https
+        host: http.ljy.com
+        port: 80
+        httpHeaders:
+        - Authorization: token
+        path: /test/ping
+    livenessProbe: # 存活性探测
+      initialDelaySeconds: 5 # 启动后延迟多少秒开始检测
+      periodSeconds: 30 # 检测间隔时间
+      successThreshold: 1 # 检测成功数达到多少才算成功 默认1
+      timeoutSeconds: 3 # 多少秒没有反应代表失败
+      failureThreshold: 1 # 允许失败的次数
+      tcpSocket:
+        host: http.ljy.com
+        port: 80
   nodeName: node1 # 节点选择器 - 指定分配到哪个节点上
   nodeSelector: # 节点选择器 - 根据节点的标签选择分配
     disk: ceph
-  tolerations:
-    effect: NoExecute
+  tolerations: # 容忍度
+    effect: NoExecute # 容忍级别
     key: taint-no-execute
-    operator: Exists  #
+    operator: Exists  # Equal Exists
     value: dev
-    tolerationSeconds: 3600  # 只有在NoExecute有效 其与默认0 就是立即驱逐
+    tolerationSeconds: 3600  # 只有在NoExecute有效 其余默认0 就是立即驱逐
   affinity: # 亲和性
     nodeAffinity: # 节点亲和性
       requiredDuringSchedulingIgnoredDuringExecution: # 硬亲和性
         nodeSelectorTerms:
-          - matchExpressions:
-              - key: zone
-                operator: In
-                values:
-                  - foo
-                  - bar
+        - matchExpressions:
+          - key: zone
+            operator: In
+            values:
+              - foo
+              - bar
       preferredDuringSchedulingIgnoredDuringExecution: # 软亲和性
         - preference:
             matchExpressions:
-              - key: zone
-                operator: In
-                values:
-                  - foo
-                  - bar
-          weight:
+            - key: zone
+              operator: In
+              values:
+                - foo
+                - bar
+        weight: 10
     podAffinity: # pod亲和性
       requiredDuringSchedulingIgnoredDuringExecution: # pod 硬亲和性
         - labelSelector:
             matchExpressions:
-              - key: zone
-                operator: In
-                values:
-                  - foo
-                  - bar
-          namespaces:  # 去哪个名称空间寻找 labelSelector: namespaces specifies which namespaces the labelSelector applies to (matches against); null or empty list means "this pod's namespace"
-          topologyKey: kubernetes.io/hostname
+            - key: zone
+              operator: In
+              values:
+                - foo
+                - bar
+        namespaces: dev # 去哪个名称空间寻找 labelSelector: namespaces specifies which namespaces the labelSelector applies to (matches against); null or empty list means "this pod's namespace"
+        topologyKey: kubernetes.io/hostname
     podAntiAffinity: # pod反亲和性
       requiredDuringSchedulingIgnoredDuringExecution:
         - labelSelector:
@@ -69,7 +121,7 @@ spec:
                 values:
                   - foo
                   - bar
-            namespaces:  # 去哪个名称空间寻找 labelSelector: namespaces specifies which namespaces the labelSelector applies to (matches against); null or empty list means "this pod's namespace"
+            namespaces: dev # 去哪个名称空间寻找 labelSelector: namespaces specifies which namespaces the labelSelector applies to (matches against); null or empty list means "this pod's namespace"
             topologyKey: kubernetes.io/hostname
 
 
